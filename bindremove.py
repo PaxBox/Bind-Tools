@@ -4,18 +4,19 @@ from flask import Flask
 app = Flask(__name__)
 
 def search_for_lines(dir, fname):
-    try:
-        # Use subprocess to execute the 'cd' command
-        subprocess.run(f'cd {dir}', shell=True, check=True)
-        print(f"Successfully navigated to {dir}!")
-    except subprocess.CalledProcessError:
-        print(f"Error: Could not navigate to {dir}. Check if the directory exists.")
-        return
+    if not os.path.exists(dir):
+        print(f"Cant find {dir}")
+    if not os.path.isdir(dir):
+        print(f"{dir} is not a directory")
+    for root, _, files in os.walk(dir):
+        for filename in files:
+            file_path = os.path.join(root, filename)
+            print({filename})
     
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Flask script for removing a FQDN")
     parser.add_argument("--fqdn", required=True, help="Fully Qualified Domain Name")
-    dir = "~/github/bind-tools"
+    dir = os.path.join(os.path.expanduser("~"), "github", "bind-tools", "etc", "bind")
     
     args = parser.parse_args()
     search_for_lines(dir, args.fqdn)
